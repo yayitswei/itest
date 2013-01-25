@@ -31,6 +31,8 @@ java.lang.IllegalStateException: Can't change/establish root binding of: *cljs-n
   ...
 ```
 
+Sometimes yields different results. Maybe a timing issue? https://gist.github.com/4637469
+
 ## Usage
 
 ```Clojure
