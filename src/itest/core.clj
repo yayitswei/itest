@@ -8,6 +8,7 @@
             [ring.util.serve :as ring-serve]
             [cemerick.piggieback :as pback]
             [compojure.handler :as handler]
+            [cemerick.yonder :as yonder]
             [compojure.route :as route]
             [itest.util :as util]))
 
@@ -26,18 +27,13 @@
   (start-web)
 
   (println "**************** Starting JVM REPL. ****************")
-  (nrepl-server/start-server
-    :handler (nrepl-server/default-handler #'pback/wrap-cljs-repl)
-    :port 7888)
 
-  (println "**************** Upgrading the REPL to a browser-REPL. ****************")
-  ;; produces this error:
-  ;; java.lang.IllegalStateException: Can't change/establish root binding of: *cljs-ns* with set
-  (with-open [conn (repl/connect :port 7888)]
-    (println
-      (->
-        (repl/client conn 1000)
-        (repl/message {:op :eval :code (str upgrade-to-cljs-repl)})
-        clojure.pprint/pprint)))
+  (let [session (yonder/prep-session
+                  {:prepare yonder/prepare-cljs-browser
+                   :new-server
+                   {:handler (clojure.tools.nrepl.server/default-handler
+                               #'cemerick.piggieback/wrap-cljs-repl)}})]
+    (println (yonder/eval session (+ 1 2 3))))
+
   (browse-url "http://localhost:3000/index.html")
   (System/exit 0))
