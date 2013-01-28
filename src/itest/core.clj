@@ -1,16 +1,11 @@
 (ns itest.core
-  (:use [compojure.core]
-        [clojure.java.browse :only [browse-url]])
+  (:use [compojure.core])
   (:require [clojure.tools.nrepl.server :as nrepl-server]
-            [clojure.tools.nrepl :as repl]
-            [cljs.repl.browser]
-            [clojure.pprint]
             [ring.util.serve :as ring-serve]
-            [cemerick.piggieback :as pback]
+            [cemerick.piggieback]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [cemerick.yonder :as yonder]
-            [itest.util :as util]))
+            [cemerick.yonder :as yonder]))
 
 (def counter (atom 0))
 
