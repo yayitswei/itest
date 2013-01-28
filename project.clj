@@ -8,17 +8,18 @@
                            [lein-cljsbuild "0.2.10"]
                            [clj-http "0.6.3"]
                            [yayitswei/yonder "0.0.1-SNAPSHOT"]
+                           [org.clojure/tools.nrepl "0.2.2-SNAPSHOT"]
                            [compojure "1.1.5"]]
             :plugins [[lein-cljsbuild "0.2.10"]
                       [lein-ring "0.8.2"]]
-            :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
             :ring {:handler itest.core/app}
+            :repositories {"snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots/"}}
             :cljsbuild {:builds
                         {:test
                          {:source-path "src/cljs"
                           :compiler
                           {:output-to "resources/public/test.js"
-                           :optimizations :whitespace
+                           :optimizations :simple
                            :pretty-print true
                            :externs ["externs/jquery-1.8.3.js"]
                            }}
