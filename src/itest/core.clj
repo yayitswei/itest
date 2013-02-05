@@ -16,16 +16,26 @@
 (defn start-web []
   (ring-serve/serve-headless (handler/site app-routes)))
 
+(defn prepare-cljs-browser
+  ([session]
+   (cemerick.yonder/eval session (cemerick.piggieback/cljs-repl
+                   :repl-env (doto (cljs.repl.browser/repl-env :port 9000)
+                               cljs.repl/-setup)))
+   (clojure.java.shell/sh "phantomjs" "http://localhost:3000/index.html")
+   session))
+
 (defn -main [& m]
   (start-web)
 
-  (let [session (yonder/prep-session
-                  {:prepare (partial yonder/prepare-cljs-browser
-                                     "http://localhost:3000/index.html" 9000)
-                   :new-server
-                   {:handler (clojure.tools.nrepl.server/default-handler
-                               #'cemerick.piggieback/wrap-cljs-repl)}})]
-    (prn (yonder/eval session (into [] (js/Array :hello "from" 'ClojureScript))))
+  (let [session
+        (yonder/prep-session
+          {:prepare prepare-cljs-browser
+           :new-server
+           {:handler (clojure.tools.nrepl.server/default-handler
+                       #'cemerick.piggieback/wrap-cljs-repl)}})]
+    (prn
+      (yonder/eval session
+                   (into [] (js/Array :hello "from" 'ClojureScript))))
     (prn (yonder/eval session (+ 1 2 3)))
     (prn (yonder/eval session (itest/test-fn)))
     (prn @counter)
